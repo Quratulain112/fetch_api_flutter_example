@@ -13,6 +13,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  String searchtext = "";
+  filter() {
+    return comments.where((comment) {
+      return comment["name"].toLowerCase().contains(searchtext.toLowerCase());
+    }).toList();
+  }
+
   List<dynamic> comments = [];
   Future<void> getcomments() async {
     try {
@@ -42,12 +49,20 @@ class _MyAppState extends State<MyApp> {
               Padding(
                 padding:
                     EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 15),
-                child: SearchBar(),
+                child: SearchBar(
+                  onChanged: (value) {
+                    setState(() {
+                      searchtext = value;
+                    });
+                  },
+                  leading: Icon(Icons.search),
+                ),
               ),
               Expanded(
                 child: ListView.builder(
-                  itemCount: comments.length,
+                  itemCount: filter().length,
                   itemBuilder: (context, index) {
+                    final comment = filter()[index];
                     return Card(
                         elevation: 5,
                         child: Padding(
@@ -56,20 +71,20 @@ class _MyAppState extends State<MyApp> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                comments[index]["name"],
+                                comment["name"],
                                 style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.blueAccent),
                               ),
                               Text(
-                                comments[index]["email"],
+                                comment["email"],
                                 style: TextStyle(
                                     fontStyle: FontStyle.italic,
                                     color:
                                         const Color.fromARGB(255, 92, 88, 88)),
                               ),
-                              Text(comments[index]["body"]),
+                              Text(comment["body"]),
                             ],
                           ),
                         ));
