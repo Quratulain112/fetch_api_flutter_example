@@ -1,3 +1,4 @@
+import 'package:fetch_api_flutter_example/api_code.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,6 +13,21 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  List<dynamic> comments = [];
+  Future<void> getcomments() async {
+    try {
+      final data = await ApiCode.fetchData();
+      setState(() {
+        comments = data;
+      });
+    } catch (e) {}
+  }
+
+  @override
+  void initState() {
+    getcomments();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,14 +39,40 @@ class _MyAppState extends State<MyApp> {
           padding: EdgeInsets.all(15),
           child: Column(
             children: [
-              SearchBar(),
+              Padding(
+                padding:
+                    EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 15),
+                child: SearchBar(),
+              ),
               Expanded(
                 child: ListView.builder(
-                  itemCount: 2,
+                  itemCount: comments.length,
                   itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text("Hi"),
-                    );
+                    return Card(
+                        elevation: 5,
+                        child: Padding(
+                          padding: EdgeInsets.all(15),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                comments[index]["name"],
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blueAccent),
+                              ),
+                              Text(
+                                comments[index]["email"],
+                                style: TextStyle(
+                                    fontStyle: FontStyle.italic,
+                                    color:
+                                        const Color.fromARGB(255, 92, 88, 88)),
+                              ),
+                              Text(comments[index]["body"]),
+                            ],
+                          ),
+                        ));
                   },
                 ),
               )
